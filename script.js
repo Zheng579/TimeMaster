@@ -907,6 +907,7 @@ function handleAlarmSet() {
 
 // Language / static text
 function applyStaticTranslations() {
+    document.documentElement.lang = currentLanguage === 'zh' ? 'zh-CN' : 'en';
     document.title = t('pageTitle');
 
     const setText = (id, key) => {
@@ -915,6 +916,8 @@ function applyStaticTranslations() {
     };
 
     setText('languageSelectLabel', 'languageLabel');
+    setText('logGroupTitle', 'logGroupTitle');
+    setText('displayGroupTitle', 'displayGroupTitle');
     setText('logTimeStartBtn', 'btnLogStartTime');
     setText('logTimeBtn', 'btnLogCurrentTime');
     setText('deleteLastLogBtn', 'btnDeleteLastLog');

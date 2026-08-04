@@ -75,6 +75,7 @@ body.clock-fullscreen-mode #clock
 {
     position: absolute;
     top: 0;
+    width: 280px;
     padding: 0 15px;
     color: #fff;
     min-height: 160px;
@@ -89,22 +90,32 @@ body.clock-fullscreen-mode #clock
     width: 100%;
 }
 
-.language-select-label
+.control-panel-group
 {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 13px;
+    display: grid;
+    gap: 8px;
+}
+
+.control-panel-group__title
+{
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.95rem;
+    font-weight: 600;
 }
 
 .language-select
 {
     width: 100%;
-    padding: 6px 10px;
+    padding: 7px 20px;
     border-radius: 5px;
     border: 0;
+    color: green;
+    background-color: #c2fbd7;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
+    text-align: center;
+    text-align-last: center;
     cursor: pointer;
 }
 
@@ -131,6 +142,7 @@ body.clock-fullscreen-mode #clock
     .alarm-control-panel
     {
         position: static;
+        width: 100%;
         margin-top: 12px;
     }
 
