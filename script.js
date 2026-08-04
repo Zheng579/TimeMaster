@@ -226,6 +226,14 @@ function clearLogTable() {
     syncTableScrollState();
 }
 
+function deleteLastLogEntry() {
+    const tbody = document.getElementById('logTableBody');
+    if (!tbody || !tbody.lastElementChild) return;
+
+    tbody.lastElementChild.remove();
+    syncTableScrollState();
+}
+
 function syncTableScrollState() {
     const wrapper = document.querySelector('.table-responsive');
     const table = wrapper ? wrapper.querySelector('table') : null;
@@ -712,6 +720,7 @@ function applyStaticTranslations() {
     setText('languageSelectLabel', 'languageLabel');
     setText('logTimeStartBtn', 'btnLogStartTime');
     setText('logTimeBtn', 'btnLogCurrentTime');
+    setText('deleteLastLogBtn', 'btnDeleteLastLog');
     setText('clearLogBtn', 'btnClearLog');
     setText('tableHeaderIndex', 'tableHeaderIndex');
     setText('tableHeaderDate', 'tableHeaderDate');
@@ -766,6 +775,11 @@ if (logTimeBtn) {
 const logTimeStartBtn = document.getElementById('logTimeStartBtn');
 if (logTimeStartBtn) {
     logTimeStartBtn.addEventListener('click', logStartTime);
+}
+
+const deleteLastLogBtn = document.getElementById('deleteLastLogBtn');
+if (deleteLastLogBtn) {
+    deleteLastLogBtn.addEventListener('click', deleteLastLogEntry);
 }
 
 const clearLogBtn = document.getElementById('clearLogBtn');
@@ -855,6 +869,7 @@ document.addEventListener('keydown', (event) => {
     const isSpace = event.code === 'Space' || event.key === ' ';
     const isTab = event.code === 'Enter' || event.key === 'Enter';
     const isEscape = event.code === 'Escape' || event.key === 'Escape';
+    const isBackspace = event.code === 'Backspace' || event.key === 'Backspace';
 
     if (isSpace) {
         event.preventDefault();
@@ -871,6 +886,12 @@ document.addEventListener('keydown', (event) => {
     if (isEscape) {
         // Don't prevent default: lets Esc still exit fullscreen, etc.
         clearLogTable();
+        return;
+    }
+
+    if (isBackspace) {
+        event.preventDefault();
+        deleteLastLogEntry();
     }
 });
 
