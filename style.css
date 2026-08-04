@@ -67,15 +67,16 @@ body.clock-fullscreen-mode #clock
 .log-alarm-layout
 {
     width: 100%;
-    position: relative;
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) max-content minmax(220px, 280px);
+    justify-content: center;
+    gap: 16px;
     align-items: start;
 }
 
 .alarm-control-panel
 {
-    position: absolute;
-    top: 0;
-    width: 280px;
+    width: 100%;
     padding: 0 15px;
     color: #fff;
     min-height: 160px;
@@ -123,10 +124,10 @@ body.clock-fullscreen-mode #clock
 {
     width: fit-content;
     max-width: 100%;
-    margin: 0 auto;
+    margin: 0;
 }
 
-@media (max-width: 980px)
+@media (max-width: 1280px)
 {
     .log-alarm-layout
     {
@@ -141,14 +142,13 @@ body.clock-fullscreen-mode #clock
 
     .alarm-control-panel
     {
-        position: static;
         width: 100%;
         margin-top: 12px;
     }
 
     .timer-controls
     {
-        position: static;
+        width: 100%;
         margin-top: 12px;
     }
 }
@@ -260,6 +260,7 @@ body.clock-fullscreen-mode #clock
 #time .table
 {
     color: #fff;
+    margin: 0 auto;
     /* border: 2px solid #fff; */
 }
 
@@ -295,10 +296,8 @@ body.clock-fullscreen-mode #clock
 
 .timer-controls
 {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: min(280px, 100%);
+    width: 100%;
+    padding: 0 15px;
     display: grid;
     gap: 10px;
 }
