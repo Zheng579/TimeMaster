@@ -458,6 +458,12 @@ function resetTimerState() {
     stopTimerInterval();
     timerRemainingMs = 0;
     timerEndTime = null;
+
+    const minInput = document.getElementById('timerMinutesInput');
+    const secInput = document.getElementById('timerSecondsInput');
+    if (minInput) minInput.value = '0';
+    if (secInput) secInput.value = '0';
+
     updateTimerDisplay();
     setTimerStatus('statusNoTimerSet');
 }
@@ -677,20 +683,27 @@ function stopCycleTimer() {
 
 function resetCycleTimerState() {
     stopCycleTimerInterval();
-    const settings = readCycleTimerSettings();
-    if (!settings) {
-        cycleTimerRemainingMs = 0;
-        cycleTimerEndTime = null;
-        cycleTimerPhase = 'focus';
-        cycleTimerCompletedCycles = 0;
-        cycleTimerTotalCycles = 0;
-        updateCycleTimerDisplay();
-        setCycleTimerStatus('statusCycleTimerSetFirst');
-        return;
-    }
+    cycleTimerRemainingMs = 0;
+    cycleTimerEndTime = null;
+    cycleTimerPhase = 'focus';
+    cycleTimerCompletedCycles = 0;
+    cycleTimerTotalCycles = 0;
+    cycleTimerFocusDurationMs = 0;
+    cycleTimerBreakDurationMs = 0;
 
-    setCycleTimerSettings(settings);
-    setCycleTimerStatus('statusCycleTimerReady');
+    const focusMinutesInput = document.getElementById('cycleTimerFocusMinutesInput');
+    const focusSecondsInput = document.getElementById('cycleTimerFocusSecondsInput');
+    const breakMinutesInput = document.getElementById('cycleTimerBreakMinutesInput');
+    const breakSecondsInput = document.getElementById('cycleTimerBreakSecondsInput');
+    const cyclesInput = document.getElementById('cycleTimerCyclesInput');
+    if (focusMinutesInput) focusMinutesInput.value = '0';
+    if (focusSecondsInput) focusSecondsInput.value = '0';
+    if (breakMinutesInput) breakMinutesInput.value = '0';
+    if (breakSecondsInput) breakSecondsInput.value = '0';
+    if (cyclesInput) cyclesInput.value = '1';
+
+    updateCycleTimerDisplay();
+    setCycleTimerStatus('statusCycleTimerSetFirst');
 }
 
 function syncAlarmInlineInput() {
@@ -736,6 +749,8 @@ function clearAlarmState() {
     setStoredAlarmTime(null);
     setStoredAlarmTarget(null);
     setStoredAlarmSetAt(null);
+    const alarmInput = document.getElementById('alarmTimeInlineInput');
+    if (alarmInput) alarmInput.value = '';
     showAlarmStatus('statusNoAlarmSet');
     updateAlarmPanel({
         setTimeText: '--',
@@ -806,7 +821,7 @@ function playAlarmSound() {
     // Keep the context alive for repeated alarm beeps.
 }
 
-function startAlarmSound(durationMs = 60000) {
+function startAlarmSound(durationMs = 60000, clearAlarmWhenDone = false) {
     stopAlarmSound();
 
     playAlarmSound();
@@ -816,7 +831,7 @@ function startAlarmSound(durationMs = 60000) {
 
     alarmSoundStopTimeoutId = setTimeout(() => {
         stopAlarmSound();
-        clearAlarmState();
+        if (clearAlarmWhenDone) clearAlarmState();
     }, durationMs);
 }
 
@@ -829,7 +844,7 @@ function triggerAlarm(timeValue) {
         });
     }
 
-    startAlarmSound(60000);
+    startAlarmSound(60000, true);
     showAlarmStatus('statusAlarmTriggeredAt', { time: timeValue });
     updateAlarmPanel({
         nextTimeText: timeValue,
@@ -915,7 +930,7 @@ function applyStaticTranslations() {
     setText('alarmNextLabel', 'alarmNextLabel');
     setText('alarmTimeInputLabel', 'alarmTimeInputLabel');
     setText('alarmSetBtn', 'alarmSetBtn');
-    setText('alarmClearBtn', 'alarmClearBtn');
+    setText('alarmResetBtn', 'alarmResetBtn');
     setText('timerTitle', 'timerTitle');
     setText('timerMinLabel', 'timerMinLabel');
     setText('timerSecLabel', 'timerSecLabel');
@@ -923,10 +938,12 @@ function applyStaticTranslations() {
     setText('timerPauseBtn', 'timerPauseBtn');
     setText('timerResetBtn', 'timerResetBtn');
     setText('cycleTimerTitle', 'cycleTimerTitle');
-    setText('cycleTimerFocusMinutesLabel', 'cycleTimerFocusMinutesLabel');
-    setText('cycleTimerFocusSecondsLabel', 'cycleTimerFocusSecondsLabel');
-    setText('cycleTimerBreakMinutesLabel', 'cycleTimerBreakMinutesLabel');
-    setText('cycleTimerBreakSecondsLabel', 'cycleTimerBreakSecondsLabel');
+    setText('cycleTimerPhase1Label', 'cycleTimerPhase1Label');
+    setText('cycleTimerPhase2Label', 'cycleTimerPhase2Label');
+    setText('cycleTimerPhase1MinutesLabel', 'timerMinLabel');
+    setText('cycleTimerPhase1SecondsLabel', 'timerSecLabel');
+    setText('cycleTimerPhase2MinutesLabel', 'timerMinLabel');
+    setText('cycleTimerPhase2SecondsLabel', 'timerSecLabel');
     setText('cycleTimerCyclesLabel', 'cycleTimerCyclesLabel');
     setText('cycleTimerStartBtn', 'timerStartBtn');
     setText('cycleTimerPauseBtn', 'timerPauseBtn');
@@ -1023,9 +1040,9 @@ if (alarmSetBtn) {
     alarmSetBtn.addEventListener('click', handleAlarmSet);
 }
 
-const alarmClearBtn = document.getElementById('alarmClearBtn');
-if (alarmClearBtn) {
-    alarmClearBtn.addEventListener('click', clearAlarmState);
+const alarmResetBtn = document.getElementById('alarmResetBtn');
+if (alarmResetBtn) {
+    alarmResetBtn.addEventListener('click', clearAlarmState);
 }
 
 const alarmSoundStopBtn = document.getElementById('alarmSoundStopBtn');

@@ -445,6 +445,28 @@ body.clock-fullscreen-mode #clock
     color: #c2f0fb;
 }
 
+.cycle-timer-panel__inputs
+{
+    display: grid;
+    gap: 10px;
+}
+
+.cycle-timer-panel__phase-inputs
+{
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid rgba(194, 240, 251, 0.35);
+    border-radius: 8px;
+}
+
+.cycle-timer-panel__phase-inputs legend
+{
+    padding: 0 6px;
+    color: #c2f0fb;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
 .cycle-timer-panel__cycles
 {
     grid-column: 1 / -1;
@@ -502,6 +524,12 @@ body.clock-fullscreen-mode #clock
     background-color: #c2f0fb;
 }
 
+.standard-timer-btn
+{
+    color: #514900;
+    background-color: #fff59d;
+}
+
 .alarm-btn:hover
 {
     box-shadow: rgba(187, 44, 44, 0.2) 0 -25px 18px -14px inset,rgba(187, 44, 44, 0.2) 0 1px 2px,rgba(187, 44, 44, 0.2) 0 2px 4px,rgba(187, 44, 44, 0.2) 0 4px 8px,rgba(187, 44, 44, 0.2) 0 8px 16px,rgba(187, 44, 44, 0.2) 0 16px 32px;
@@ -514,4 +542,9 @@ body.clock-fullscreen-mode #clock
 .timer-btn:hover
 {
     box-shadow: rgba(44, 101, 187, 0.2) 0 -25px 18px -14px inset,rgba(44, 101, 187, 0.2) 0 1px 2px,rgba(44, 101, 187, 0.2) 0 2px 4px,rgba(44, 101, 187, 0.2) 0 4px 8px,rgba(44, 101, 187, 0.2) 0 8px 16px,rgba(44, 101, 187, 0.2) 0 16px 32px;
+}
+
+.standard-timer-btn:hover
+{
+    box-shadow: rgba(254, 232, 0, 0.2) 0 -25px 18px -14px inset,rgba(254, 232, 0, 0.15) 0 1px 2px,rgba(254, 232, 0, 0.15) 0 2px 4px,rgba(254, 232, 0, 0.15) 0 4px 8px,rgba(254, 232, 0, 0.15) 0 8px 16px,rgba(254, 232, 0, 0.15) 0 16px 32px;
 }
