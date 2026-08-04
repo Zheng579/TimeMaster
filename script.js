@@ -177,7 +177,7 @@ function clearStoredStartTime() {
     localStorage.removeItem(START_TIME_STORAGE_KEY);
 }
 
-function addLogEntry({ startTime, loggedTime, isStartTimeUpdated = false }) {
+function addLogEntry({ startTime, loggedTime, isStartTimeUpdated = false, isHighlighted = false }) {
     const tbody = document.getElementById('logTableBody');
     if (!tbody) return;
 
@@ -187,16 +187,24 @@ function addLogEntry({ startTime, loggedTime, isStartTimeUpdated = false }) {
     const startTimeStr = start ? formatTimeForDisplay(start) : '--';
     const loggedTimeStr = formatTimeForDisplay(logged);
     const durationStr = start ? formatDuration(logged.getTime() - start.getTime()) : '--';
+    const previousRow = tbody.lastElementChild;
+    const previousLoggedTimeMs = previousRow ? Number(previousRow.dataset.loggedTimeMs) : NaN;
+    const logIntervalStr = Number.isFinite(previousLoggedTimeMs)
+        ? formatDuration(logged.getTime() - previousLoggedTimeMs)
+        : '--';
 
     const rowIndex = tbody.children.length + 1;
     const tr = document.createElement('tr');
+    tr.dataset.loggedTimeMs = String(logged.getTime());
     if (isStartTimeUpdated) tr.classList.add('start-time-updated-row');
+    if (isHighlighted) tr.classList.add('highlighted-log-row');
     tr.innerHTML = `
         <th scope="row">${rowIndex}</th>
         <td>${dateStr}</td>
         <td>${startTimeStr}</td>
         <td>${loggedTimeStr}</td>
         <td>${durationStr}</td>
+        <td>${logIntervalStr}</td>
     `.trim();
     tbody.appendChild(tr);
 
@@ -210,7 +218,7 @@ function logStartTime() {
     addLogEntry({ startTime: now, loggedTime: now, isStartTimeUpdated: true });
 }
 
-function logCurrentTime() {
+function logCurrentTime({ isHighlighted = false } = {}) {
     const now = new Date();
 
     let start = getStoredStartTime();
@@ -219,11 +227,15 @@ function logCurrentTime() {
         // return;
         start = now;
         setStoredStartTime(now);
-        addLogEntry({ startTime: start, loggedTime: now, isStartTimeUpdated: true });
+        addLogEntry({ startTime: start, loggedTime: now, isStartTimeUpdated: true, isHighlighted });
         return;
     }
 
-    addLogEntry({ startTime: start, loggedTime: now });
+    addLogEntry({ startTime: start, loggedTime: now, isHighlighted });
+}
+
+function logHighlightedTime() {
+    logCurrentTime({ isHighlighted: true });
 }
 
 function clearLogTable() {
@@ -920,6 +932,7 @@ function applyStaticTranslations() {
     setText('displayGroupTitle', 'displayGroupTitle');
     setText('logTimeStartBtn', 'btnLogStartTime');
     setText('logTimeBtn', 'btnLogCurrentTime');
+    setText('logHighlightedTimeBtn', 'btnLogHighlightedTime');
     setText('deleteLastLogBtn', 'btnDeleteLastLog');
     setText('clearLogBtn', 'btnClearLog');
     setText('tableHeaderIndex', 'tableHeaderIndex');
@@ -927,6 +940,7 @@ function applyStaticTranslations() {
     setText('tableHeaderStartTime', 'tableHeaderStartTime');
     setText('tableHeaderLoggedTime', 'tableHeaderLoggedTime');
     setText('tableHeaderDuration', 'tableHeaderDuration');
+    setText('tableHeaderLogInterval', 'tableHeaderLogInterval');
     setText('alarmSoundStopBtn', 'alarmStopSound');
     setText('clockPanelTitle', 'clockPanelTitle');
     setText('alarmSetTimeLabel', 'alarmSetTimeLabel');
@@ -1010,7 +1024,12 @@ setInterval(updateClock, 1000);
 // Button
 const logTimeBtn = document.getElementById('logTimeBtn');
 if (logTimeBtn) {
-    logTimeBtn.addEventListener('click', logCurrentTime);
+    logTimeBtn.addEventListener('click', () => logCurrentTime());
+}
+
+const logHighlightedTimeBtn = document.getElementById('logHighlightedTimeBtn');
+if (logHighlightedTimeBtn) {
+    logHighlightedTimeBtn.addEventListener('click', logHighlightedTime);
 }
 
 const logTimeStartBtn = document.getElementById('logTimeStartBtn');
@@ -1134,10 +1153,17 @@ document.addEventListener('keydown', (event) => {
     const isTab = event.code === 'Enter' || event.key === 'Enter';
     const isEscape = event.code === 'Escape' || event.key === 'Escape';
     const isBackspace = event.code === 'Backspace' || event.key === 'Backspace';
+    const isShift = event.code === 'ShiftLeft' || event.code === 'ShiftRight' || event.key === 'Shift';
 
     if (isSpace) {
         event.preventDefault();
         logCurrentTime();
+        return;
+    }
+
+    if (isShift) {
+        event.preventDefault();
+        logHighlightedTime();
         return;
     }
 

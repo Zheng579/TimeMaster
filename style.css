@@ -276,7 +276,7 @@ body.clock-fullscreen-mode #clock
 #time .table th:not(:first-child),
 #time .table td:not(:first-child)
 {
-    min-width: 160px;
+    min-width: 128px;
 }
 
 #time .table tr.start-time-updated-row th,
@@ -284,6 +284,13 @@ body.clock-fullscreen-mode #clock
 {
     background: rgba(4, 252, 67, 0.18);
     border-color: #04fc43;
+}
+
+#time .table tr.highlighted-log-row th,
+#time .table tr.highlighted-log-row td
+{
+    background: rgba(86, 204, 242, 0.32);
+    border-color: #56ccf2;
 }
 
 .timer-controls

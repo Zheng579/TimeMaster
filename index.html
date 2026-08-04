@@ -45,6 +45,7 @@
                         <h3 class="control-panel-group__title" id="logGroupTitle">Log</h3>
                         <button class="button time-entry-btn" id="logTimeStartBtn" type="button" title="Shortcut: Enter" aria-keyshortcuts="Tab">Set start time</button>
                         <button class="button time-entry-btn" id="logTimeBtn" type="button" title="Shortcut: Space" aria-keyshortcuts="Space">Current time</button>
+                        <button class="button time-entry-btn" id="logHighlightedTimeBtn" type="button" title="Shortcut: Shift" aria-keyshortcuts="Shift">Highlight time</button>
                         <button class="button time-entry-btn" id="deleteLastLogBtn" type="button" title="Shortcut: Backspace" aria-keyshortcuts="Backspace">Delete last entry</button>
                         <button class="button time-entry-btn" id="clearLogBtn" type="button" title="Shortcut: Esc" aria-keyshortcuts="Escape">Clear all</button>
                     </section>
@@ -65,11 +66,12 @@
                     <table class="table" aria-label="Logged time entries">
                         <thead>
                             <tr>
-                                <th scope="col" style="width: 72px;" id="tableHeaderIndex">#</th>
+                                <th scope="col" style="width: 80px;" id="tableHeaderIndex">#</th>
                                 <th scope="col" id="tableHeaderDate">Date</th>
                                 <th scope="col" id="tableHeaderStartTime">Start Time</th>
                                 <th scope="col" id="tableHeaderLoggedTime">Logged Time</th>
                                 <th scope="col" id="tableHeaderDuration">Duration</th>
+                                <th scope="col" id="tableHeaderLogInterval">Log Interval</th>
                             </tr>
                         </thead>
                         <tbody id="logTableBody"></tbody>
