@@ -13,6 +13,11 @@ let alarmTimeoutId = null;
 let alarmAlertTimeoutId = null;
 let alarmSoundIntervalId = null;
 let alarmSoundStopTimeoutId = null;
+let alarmSoundActive = false;
+let customAlarmAudio = null;
+let customAlarmAudioUrl = null;
+let customAlarmFileName = '';
+let customAlarmSoundStatusKey = 'alarmSoundDefault';
 let timerIntervalId = null;
 let timerRemainingMs = 0;
 let timerEndTime = null;
@@ -744,6 +749,7 @@ function clearAlarmAlert() {
 }
 
 function stopAlarmSound() {
+    alarmSoundActive = false;
     if (alarmSoundIntervalId) {
         clearInterval(alarmSoundIntervalId);
         alarmSoundIntervalId = null;
@@ -752,6 +758,41 @@ function stopAlarmSound() {
         clearTimeout(alarmSoundStopTimeoutId);
         alarmSoundStopTimeoutId = null;
     }
+    if (customAlarmAudio) {
+        customAlarmAudio.pause();
+        customAlarmAudio.loop = false;
+        customAlarmAudio.currentTime = 0;
+    }
+}
+
+function updateCustomAlarmSoundStatus() {
+    const status = document.getElementById('alarmSoundFileStatus');
+    if (!status) return;
+    const params = customAlarmFileName ? { name: customAlarmFileName } : null;
+    status.textContent = t(customAlarmSoundStatusKey, params);
+}
+
+function handleCustomAlarmSoundFile(event) {
+    const input = event.currentTarget;
+    const file = input && input.files ? input.files[0] : null;
+    if (!file) return;
+
+    const isMp3 = file.type === 'audio/mpeg' || file.name.toLowerCase().endsWith('.mp3');
+    if (!isMp3) {
+        input.value = '';
+        customAlarmSoundStatusKey = 'alarmSoundInvalid';
+        updateCustomAlarmSoundStatus();
+        return;
+    }
+
+    stopAlarmSound();
+    if (customAlarmAudioUrl) URL.revokeObjectURL(customAlarmAudioUrl);
+    customAlarmAudioUrl = URL.createObjectURL(file);
+    customAlarmAudio = new Audio(customAlarmAudioUrl);
+    customAlarmAudio.preload = 'auto';
+    customAlarmFileName = file.name;
+    customAlarmSoundStatusKey = 'alarmSoundSelected';
+    updateCustomAlarmSoundStatus();
 }
 
 function clearAlarmState() {
@@ -804,7 +845,7 @@ function ensureAlarmAudioContext() {
     return alarmAudioContext;
 }
 
-function playAlarmSound() {
+function playGeneratedAlarmSound() {
     const context = ensureAlarmAudioContext();
     if (!context) return;
     const duration = 0.25;
@@ -833,13 +874,38 @@ function playAlarmSound() {
     // Keep the context alive for repeated alarm beeps.
 }
 
+function playAlarmSound() {
+    if (!customAlarmAudio) {
+        playGeneratedAlarmSound();
+        return;
+    }
+
+    customAlarmAudio.pause();
+    customAlarmAudio.loop = false;
+    customAlarmAudio.currentTime = 0;
+    const playback = customAlarmAudio.play();
+    if (playback) playback.catch(() => playGeneratedAlarmSound());
+}
+
 function startAlarmSound(durationMs = 60000, clearAlarmWhenDone = false) {
     stopAlarmSound();
+    alarmSoundActive = true;
 
-    playAlarmSound();
-    alarmSoundIntervalId = setInterval(() => {
-        playAlarmSound();
-    }, 1500);
+    if (customAlarmAudio) {
+        customAlarmAudio.loop = true;
+        customAlarmAudio.currentTime = 0;
+        const playback = customAlarmAudio.play();
+        if (playback) {
+            playback.catch(() => {
+                if (!alarmSoundActive) return;
+                playGeneratedAlarmSound();
+                alarmSoundIntervalId = setInterval(playGeneratedAlarmSound, 1500);
+            });
+        }
+    } else {
+        playGeneratedAlarmSound();
+        alarmSoundIntervalId = setInterval(playGeneratedAlarmSound, 1500);
+    }
 
     alarmSoundStopTimeoutId = setTimeout(() => {
         stopAlarmSound();
@@ -942,6 +1008,7 @@ function applyStaticTranslations() {
     setText('tableHeaderDuration', 'tableHeaderDuration');
     setText('tableHeaderLogInterval', 'tableHeaderLogInterval');
     setText('alarmSoundStopLabel', 'alarmStopSound');
+    setText('alarmSoundFileLabel', 'alarmSoundFileLabel');
     setText('clockPanelTitle', 'clockPanelTitle');
     setText('alarmSetTimeLabel', 'alarmSetTimeLabel');
     setText('alarmNextLabel', 'alarmNextLabel');
@@ -973,6 +1040,7 @@ function applyStaticTranslations() {
     setTimerStatus(lastTimerStatusKey, lastTimerStatusParams);
     updateCycleTimerDisplay();
     setCycleTimerStatus(lastCycleTimerStatusKey);
+    updateCustomAlarmSoundStatus();
     showAlarmStatus(lastAlarmStatusKey, lastAlarmStatusParams);
     updateClock();
     refreshAlarmPanelTimes();
@@ -1095,6 +1163,11 @@ if (alarmSoundStopBtn) {
         showAlarmStatus('statusSoundStopped');
         setTimerStatus('statusSoundStopped');
     });
+}
+
+const alarmSoundFileInput = document.getElementById('alarmSoundFileInput');
+if (alarmSoundFileInput) {
+    alarmSoundFileInput.addEventListener('change', handleCustomAlarmSoundFile);
 }
 
 const timerStartBtn = document.getElementById('timerStartBtn');

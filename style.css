@@ -371,6 +371,41 @@ body.clock-fullscreen-mode #clock
     box-shadow: none;
 }
 
+.timer-controls__sound-picker
+{
+    display: grid;
+    gap: 6px;
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.timer-controls__sound-picker input
+{
+    width: 100%;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+}
+
+.timer-controls__sound-picker input::file-selector-button
+{
+    margin-right: 8px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 5px;
+    color: rgb(37, 125, 188);
+    background: #c2f0fb;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.timer-controls__sound-status
+{
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+}
+
 .timer-accordion
 {
     background: transparent;
