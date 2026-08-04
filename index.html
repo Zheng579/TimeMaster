@@ -69,80 +69,98 @@
                         <tbody id="logTableBody"></tbody>
                     </table>
                 </div>
-                <aside class="alarm-panel" id="alarmPanel" aria-live="polite">
-                    <button class="button time-entry-btn" id="alarmSoundStopBtn" type="button">Stop Sound</button>
-                    <div class="alarm-panel__row">
-                        <span class="alarm-panel__label" id="alarmSetTimeLabel">Set Time</span>
-                        <span class="alarm-panel__value" id="alarmPanelTime">--</span>
-                    </div>
-                    <div class="alarm-panel__row">
-                        <span class="alarm-panel__label" id="alarmNextLabel">Next</span>
-                        <span class="alarm-panel__value" id="alarmPanelNext">--</span>
-                    </div>
-                    <div class="alarm-panel__inputs">
-                        <label>
-                            <span id="alarmTimeInputLabel">Alarm time</span>
-                            <input type="time" id="alarmTimeInlineInput">
-                        </label>
-                    </div>
-                    <div class="alarm-panel__actions">
-                        <button class="button alarm-btn" id="alarmSetBtn" type="button">Set</button>
-                        <button class="button alarm-btn" id="alarmClearBtn" type="button">Clear</button>
-                    </div>
-                    <div class="timer-panel" id="timerPanel">
-                        <h4 id="timerTitle">Timer</h4>
-                        <div class="timer-panel__display" id="timerDisplay">00:00</div>
-                        <div class="timer-panel__inputs">
-                            <label>
-                                <span id="timerMinLabel">Min</span>
-                                <input type="number" id="timerMinutesInput" min="0" max="999" value="0">
-                            </label>
-                            <label>
-                                <span id="timerSecLabel">Sec</span>
-                                <input type="number" id="timerSecondsInput" min="0" max="59" value="0">
-                            </label>
+                <aside class="timer-controls">
+                    <button class="button alarm-btn timer-controls__stop-sound" id="alarmSoundStopBtn" type="button">Stop Sound</button>
+                    <section class="timer-accordion alarm-panel" id="alarmPanel" aria-live="polite">
+                        <button class="timer-accordion__header" id="alarmPanelToggleBtn" type="button" aria-expanded="false" aria-controls="alarmPanelContent" data-timer-accordion-toggle>
+                            <span id="clockPanelTitle">Clock</span>
+                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="timer-accordion__content" id="alarmPanelContent" hidden>
+                            <div class="alarm-panel__row">
+                                <span class="alarm-panel__label" id="alarmSetTimeLabel">Set Time</span>
+                                <span class="alarm-panel__value" id="alarmPanelTime">--</span>
+                            </div>
+                            <div class="alarm-panel__row">
+                                <span class="alarm-panel__label" id="alarmNextLabel">Next</span>
+                                <span class="alarm-panel__value" id="alarmPanelNext">--</span>
+                            </div>
+                            <div class="alarm-panel__inputs">
+                                <label>
+                                    <span id="alarmTimeInputLabel">Alarm time</span>
+                                    <input type="time" id="alarmTimeInlineInput">
+                                </label>
+                            </div>
+                            <div class="alarm-panel__actions">
+                                <button class="button alarm-btn" id="alarmSetBtn" type="button">Set</button>
+                                <button class="button alarm-btn" id="alarmClearBtn" type="button">Clear</button>
+                            </div>
                         </div>
-                        <div class="timer-panel__actions">
-                            <button class="button timer-btn" id="timerStartBtn" type="button">Start</button>
-                            <button class="button timer-btn" id="timerPauseBtn" type="button">Pause</button>
-                            <button class="button timer-btn" id="timerResetBtn" type="button">Reset</button>
+                    </section>
+                    <section class="timer-accordion" id="timerPanel">
+                        <button class="timer-accordion__header" id="timerPanelToggleBtn" type="button" aria-expanded="false" aria-controls="timerPanelContent" data-timer-accordion-toggle>
+                            <span id="timerTitle">Timer</span>
+                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="timer-accordion__content" id="timerPanelContent" hidden>
+                            <div class="timer-panel__display" id="timerDisplay">00:00</div>
+                            <div class="timer-panel__inputs">
+                                <label>
+                                    <span id="timerMinLabel">Min</span>
+                                    <input type="number" id="timerMinutesInput" min="0" max="999" value="0">
+                                </label>
+                                <label>
+                                    <span id="timerSecLabel">Sec</span>
+                                    <input type="number" id="timerSecondsInput" min="0" max="59" value="0">
+                                </label>
+                            </div>
+                            <div class="timer-panel__actions">
+                                <button class="button timer-btn" id="timerStartBtn" type="button">Start</button>
+                                <button class="button timer-btn" id="timerPauseBtn" type="button">Pause</button>
+                                <button class="button timer-btn" id="timerResetBtn" type="button">Reset</button>
+                            </div>
+                            <div class="timer-panel__status" id="timerStatus">No timer set.</div>
                         </div>
-                        <div class="timer-panel__status" id="timerStatus">No timer set.</div>
-                    </div>
-                    <div class="timer-panel cycle-timer-panel" id="cycleTimerPanel">
-                        <h4 id="cycleTimerTitle">Focus cycle timer</h4>
-                        <div class="timer-panel__display" id="cycleTimerDisplay">00:00</div>
-                        <div class="cycle-timer-panel__phase" id="cycleTimerPhase">Focus · Cycle 1 of 1</div>
-                        <div class="timer-panel__inputs cycle-timer-panel__inputs">
-                            <label>
-                                <span id="cycleTimerFocusMinutesLabel">Focus min</span>
-                                <input type="number" id="cycleTimerFocusMinutesInput" min="0" max="999" value="0">
-                            </label>
-                            <label>
-                                <span id="cycleTimerFocusSecondsLabel">Focus sec</span>
-                                <input type="number" id="cycleTimerFocusSecondsInput" min="0" max="59" value="0">
-                            </label>
-                            <label>
-                                <span id="cycleTimerBreakMinutesLabel">Break min</span>
-                                <input type="number" id="cycleTimerBreakMinutesInput" min="0" max="999" value="0">
-                            </label>
-                            <label>
-                                <span id="cycleTimerBreakSecondsLabel">Break sec</span>
-                                <input type="number" id="cycleTimerBreakSecondsInput" min="0" max="59" value="0">
-                            </label>
-                            <label class="cycle-timer-panel__cycles">
-                                <span id="cycleTimerCyclesLabel">Cycles</span>
-                                <input type="number" id="cycleTimerCyclesInput" min="1" max="999" value="1">
-                            </label>
+                    </section>
+                    <section class="timer-accordion" id="cycleTimerPanel">
+                        <button class="timer-accordion__header" id="cycleTimerPanelToggleBtn" type="button" aria-expanded="false" aria-controls="cycleTimerPanelContent" data-timer-accordion-toggle>
+                            <span id="cycleTimerTitle">Focus cycle timer</span>
+                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="timer-accordion__content" id="cycleTimerPanelContent" hidden>
+                            <div class="timer-panel__display" id="cycleTimerDisplay">00:00</div>
+                            <div class="cycle-timer-panel__phase" id="cycleTimerPhase">Focus · Cycle 1 of 1</div>
+                            <div class="timer-panel__inputs cycle-timer-panel__inputs">
+                                <label>
+                                    <span id="cycleTimerFocusMinutesLabel">Focus min</span>
+                                    <input type="number" id="cycleTimerFocusMinutesInput" min="0" max="999" value="0">
+                                </label>
+                                <label>
+                                    <span id="cycleTimerFocusSecondsLabel">Focus sec</span>
+                                    <input type="number" id="cycleTimerFocusSecondsInput" min="0" max="59" value="0">
+                                </label>
+                                <label>
+                                    <span id="cycleTimerBreakMinutesLabel">Break min</span>
+                                    <input type="number" id="cycleTimerBreakMinutesInput" min="0" max="999" value="0">
+                                </label>
+                                <label>
+                                    <span id="cycleTimerBreakSecondsLabel">Break sec</span>
+                                    <input type="number" id="cycleTimerBreakSecondsInput" min="0" max="59" value="0">
+                                </label>
+                                <label class="cycle-timer-panel__cycles">
+                                    <span id="cycleTimerCyclesLabel">Cycles</span>
+                                    <input type="number" id="cycleTimerCyclesInput" min="1" max="999" value="1">
+                                </label>
+                            </div>
+                            <div class="timer-panel__actions">
+                                <button class="button timer-btn" id="cycleTimerStartBtn" type="button">Start</button>
+                                <button class="button timer-btn" id="cycleTimerPauseBtn" type="button">Pause</button>
+                                <button class="button timer-btn" id="cycleTimerStopBtn" type="button">Stop</button>
+                                <button class="button timer-btn" id="cycleTimerResetBtn" type="button">Reset</button>
+                            </div>
+                            <div class="timer-panel__status" id="cycleTimerStatus">Set focus, break, and cycle count.</div>
                         </div>
-                        <div class="timer-panel__actions">
-                            <button class="button timer-btn" id="cycleTimerStartBtn" type="button">Start</button>
-                            <button class="button timer-btn" id="cycleTimerPauseBtn" type="button">Pause</button>
-                            <button class="button timer-btn" id="cycleTimerStopBtn" type="button">Stop</button>
-                            <button class="button timer-btn" id="cycleTimerResetBtn" type="button">Reset</button>
-                        </div>
-                        <div class="timer-panel__status" id="cycleTimerStatus">Set focus, break, and cycle count.</div>
-                    </div>
+                    </section>
                 </aside>
             </div>
 

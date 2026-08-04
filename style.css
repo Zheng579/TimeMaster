@@ -134,7 +134,7 @@ body.clock-fullscreen-mode #clock
         margin-top: 12px;
     }
 
-    .alarm-panel
+    .timer-controls
     {
         position: static;
         margin-top: 12px;
@@ -274,25 +274,70 @@ body.clock-fullscreen-mode #clock
     border-color: #04fc43;
 }
 
-.alarm-panel
+.timer-controls
 {
     position: absolute;
     top: 0;
+    right: 0;
+    width: min(280px, 100%);
+    display: grid;
+    gap: 10px;
+}
+
+.timer-controls__stop-sound
+{
+    width: 100%;
+}
+
+.timer-accordion
+{
     background: #1f242a;
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 16px;
-    padding: 16px;
     color: #fff;
-    min-height: 160px;
-    min-width: 250px;
     display: grid;
-    gap: 15px;
 }
 
-.alarm-panel h3
+.timer-accordion__header
 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
     font-size: 1.1rem;
     font-weight: 600;
+}
+
+.timer-accordion__arrow
+{
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.timer-accordion__content
+{
+    display: grid;
+    gap: 12px;
+    padding: 0 16px 16px;
+}
+
+.timer-accordion__content[hidden]
+{
+    display: none;
 }
 
 .alarm-panel__row
@@ -346,21 +391,6 @@ body.clock-fullscreen-mode #clock
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
     gap: 8px;
-}
-
-.timer-panel
-{
-    margin-top: 8px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    display: grid;
-    gap: 10px;
-}
-
-.timer-panel h4
-{
-    font-size: 1rem;
-    font-weight: 600;
 }
 
 .timer-panel__display
@@ -420,7 +450,7 @@ body.clock-fullscreen-mode #clock
     grid-column: 1 / -1;
 }
 
-.alarm-panel.is-alert
+.timer-accordion.is-alert
 {
     animation: alarm-blink 0.8s steps(1, end) infinite;
     border-color: #ff4d4f;

@@ -910,6 +910,7 @@ function applyStaticTranslations() {
     setText('tableHeaderLoggedTime', 'tableHeaderLoggedTime');
     setText('tableHeaderDuration', 'tableHeaderDuration');
     setText('alarmSoundStopBtn', 'alarmStopSound');
+    setText('clockPanelTitle', 'clockPanelTitle');
     setText('alarmSetTimeLabel', 'alarmSetTimeLabel');
     setText('alarmNextLabel', 'alarmNextLabel');
     setText('alarmTimeInputLabel', 'alarmTimeInputLabel');
@@ -953,7 +954,33 @@ function initLanguageSelect() {
     });
 }
 
+function initTimerAccordions() {
+    const panels = Array.from(document.querySelectorAll('.timer-accordion'));
+    panels.forEach((panel) => {
+        const toggle = panel.querySelector('[data-timer-accordion-toggle]');
+        const content = panel.querySelector('.timer-accordion__content');
+        if (!toggle || !content) return;
+
+        toggle.addEventListener('click', () => {
+            const shouldExpand = content.hidden;
+            panels.forEach((otherPanel) => {
+                const otherToggle = otherPanel.querySelector('[data-timer-accordion-toggle]');
+                const otherContent = otherPanel.querySelector('.timer-accordion__content');
+                const otherArrow = otherPanel.querySelector('.timer-accordion__arrow');
+                if (!otherToggle || !otherContent) return;
+
+                const isExpanded = otherPanel === panel && shouldExpand;
+                otherContent.hidden = !isExpanded;
+                otherToggle.setAttribute('aria-expanded', String(isExpanded));
+                otherPanel.classList.toggle('is-expanded', isExpanded);
+                if (otherArrow) otherArrow.textContent = isExpanded ? '▲' : '▼';
+            });
+        });
+    });
+}
+
 // Clock
+initTimerAccordions();
 initLanguageSelect();
 applyStaticTranslations();
 syncFormatToggleUI();
