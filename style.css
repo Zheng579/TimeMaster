@@ -97,12 +97,47 @@ body.clock-fullscreen-mode #clock
     gap: 8px;
 }
 
-.control-panel-group__title
+.control-panel-group__header
 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     padding-bottom: 4px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
     font-size: 0.95rem;
     font-weight: 600;
+}
+
+.control-panel-group__arrow
+{
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+.control-panel-group__content
+{
+    display: grid;
+    gap: 8px;
+}
+
+.control-panel-group__content[hidden]
+{
+    display: none;
 }
 
 .language-select

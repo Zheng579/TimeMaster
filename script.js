@@ -1013,8 +1013,28 @@ function initTimerAccordions() {
     });
 }
 
+function initControlGroupAccordions() {
+    const groups = document.querySelectorAll('.control-panel-group');
+    groups.forEach((group) => {
+        const toggle = group.querySelector('[data-control-group-toggle]');
+        const content = group.querySelector('.control-panel-group__content');
+        const arrow = group.querySelector('.control-panel-group__arrow');
+        if (!toggle || !content) return;
+
+        toggle.addEventListener('click', () => {
+            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            const nextExpanded = !isExpanded;
+            content.hidden = !nextExpanded;
+            toggle.setAttribute('aria-expanded', String(nextExpanded));
+            group.classList.toggle('is-expanded', nextExpanded);
+            if (arrow) arrow.textContent = nextExpanded ? '▲' : '▼';
+        });
+    });
+}
+
 // Clock
 initTimerAccordions();
+initControlGroupAccordions();
 initLanguageSelect();
 applyStaticTranslations();
 syncFormatToggleUI();

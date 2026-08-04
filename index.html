@@ -41,25 +41,40 @@
 
             <div class="log-alarm-layout">
                 <aside class="alarm-control-panel" id="alarmControlPanel">
-                    <section class="control-panel-group">
-                        <h3 class="control-panel-group__title" id="logGroupTitle">Log</h3>
-                        <button class="button time-entry-btn" id="logTimeStartBtn" type="button" title="Shortcut: Enter" aria-keyshortcuts="Tab">Set start time</button>
-                        <button class="button time-entry-btn" id="logTimeBtn" type="button" title="Shortcut: Space" aria-keyshortcuts="Space">Current time</button>
-                        <button class="button time-entry-btn" id="logHighlightedTimeBtn" type="button" title="Shortcut: Shift" aria-keyshortcuts="Shift">Highlight time</button>
-                        <button class="button time-entry-btn" id="deleteLastLogBtn" type="button" title="Shortcut: Backspace" aria-keyshortcuts="Backspace">Delete last entry</button>
-                        <button class="button time-entry-btn" id="clearLogBtn" type="button" title="Shortcut: Esc" aria-keyshortcuts="Escape">Clear all</button>
+                    <section class="control-panel-group is-expanded">
+                        <button class="control-panel-group__header" type="button" aria-expanded="true" aria-controls="logGroupContent" data-control-group-toggle>
+                            <span id="logGroupTitle">Log</span>
+                            <span class="control-panel-group__arrow" aria-hidden="true">▲</span>
+                        </button>
+                        <div class="control-panel-group__content" id="logGroupContent">
+                            <button class="button time-entry-btn" id="logTimeStartBtn" type="button" title="Shortcut: Enter" aria-keyshortcuts="Tab">Set start time</button>
+                            <button class="button time-entry-btn" id="logTimeBtn" type="button" title="Shortcut: Space" aria-keyshortcuts="Space">Current time</button>
+                            <button class="button time-entry-btn" id="logHighlightedTimeBtn" type="button" title="Shortcut: Shift" aria-keyshortcuts="Shift">Highlight time</button>
+                            <button class="button time-entry-btn" id="deleteLastLogBtn" type="button" title="Shortcut: Backspace" aria-keyshortcuts="Backspace">Delete last entry</button>
+                            <button class="button time-entry-btn" id="clearLogBtn" type="button" title="Shortcut: Esc" aria-keyshortcuts="Escape">Clear all</button>
+                        </div>
                     </section>
-                    <section class="control-panel-group">
-                        <h3 class="control-panel-group__title" id="displayGroupTitle">Display</h3>
-                        <button class="button time-entry-btn" id="fullscreenClockBtn" type="button">Show Clock Only</button>
-                        <button class="button time-entry-btn" id="toggleFormatBtn" type="button">Switch to 24h</button>
+                    <section class="control-panel-group is-expanded">
+                        <button class="control-panel-group__header" type="button" aria-expanded="true" aria-controls="displayGroupContent" data-control-group-toggle>
+                            <span id="displayGroupTitle">Display</span>
+                            <span class="control-panel-group__arrow" aria-hidden="true">▲</span>
+                        </button>
+                        <div class="control-panel-group__content" id="displayGroupContent">
+                            <button class="button time-entry-btn" id="fullscreenClockBtn" type="button">Show Clock Only</button>
+                            <button class="button time-entry-btn" id="toggleFormatBtn" type="button">Switch to 24h</button>
+                        </div>
                     </section>
-                    <section class="control-panel-group">
-                        <h3 class="control-panel-group__title" id="languageSelectLabel">Language</h3>
-                        <select class="language-select" id="languageSelect" aria-labelledby="languageSelectLabel">
-                            <option value="en">English</option>
-                            <option value="zh">中文（简体）</option>
-                        </select>
+                    <section class="control-panel-group is-expanded">
+                        <button class="control-panel-group__header" type="button" aria-expanded="true" aria-controls="languageGroupContent" data-control-group-toggle>
+                            <span id="languageSelectLabel">Language</span>
+                            <span class="control-panel-group__arrow" aria-hidden="true">▲</span>
+                        </button>
+                        <div class="control-panel-group__content" id="languageGroupContent">
+                            <select class="language-select" id="languageSelect" aria-labelledby="languageSelectLabel">
+                                <option value="en">English</option>
+                                <option value="zh">中文（简体）</option>
+                            </select>
+                        </div>
                     </section>
                 </aside>
                 <div class="table-responsive">
