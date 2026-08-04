@@ -408,6 +408,18 @@ body.clock-fullscreen-mode #clock
     text-align: center;
 }
 
+.cycle-timer-panel__phase
+{
+    font-size: 0.85rem;
+    text-align: center;
+    color: #c2f0fb;
+}
+
+.cycle-timer-panel__cycles
+{
+    grid-column: 1 / -1;
+}
+
 .alarm-panel.is-alert
 {
     animation: alarm-blink 0.8s steps(1, end) infinite;

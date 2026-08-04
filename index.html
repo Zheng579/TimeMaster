@@ -109,6 +109,40 @@
                         </div>
                         <div class="timer-panel__status" id="timerStatus">No timer set.</div>
                     </div>
+                    <div class="timer-panel cycle-timer-panel" id="cycleTimerPanel">
+                        <h4 id="cycleTimerTitle">Focus cycle timer</h4>
+                        <div class="timer-panel__display" id="cycleTimerDisplay">00:00</div>
+                        <div class="cycle-timer-panel__phase" id="cycleTimerPhase">Focus · Cycle 1 of 1</div>
+                        <div class="timer-panel__inputs cycle-timer-panel__inputs">
+                            <label>
+                                <span id="cycleTimerFocusMinutesLabel">Focus min</span>
+                                <input type="number" id="cycleTimerFocusMinutesInput" min="0" max="999" value="0">
+                            </label>
+                            <label>
+                                <span id="cycleTimerFocusSecondsLabel">Focus sec</span>
+                                <input type="number" id="cycleTimerFocusSecondsInput" min="0" max="59" value="0">
+                            </label>
+                            <label>
+                                <span id="cycleTimerBreakMinutesLabel">Break min</span>
+                                <input type="number" id="cycleTimerBreakMinutesInput" min="0" max="999" value="0">
+                            </label>
+                            <label>
+                                <span id="cycleTimerBreakSecondsLabel">Break sec</span>
+                                <input type="number" id="cycleTimerBreakSecondsInput" min="0" max="59" value="0">
+                            </label>
+                            <label class="cycle-timer-panel__cycles">
+                                <span id="cycleTimerCyclesLabel">Cycles</span>
+                                <input type="number" id="cycleTimerCyclesInput" min="1" max="999" value="1">
+                            </label>
+                        </div>
+                        <div class="timer-panel__actions">
+                            <button class="button timer-btn" id="cycleTimerStartBtn" type="button">Start</button>
+                            <button class="button timer-btn" id="cycleTimerPauseBtn" type="button">Pause</button>
+                            <button class="button timer-btn" id="cycleTimerStopBtn" type="button">Stop</button>
+                            <button class="button timer-btn" id="cycleTimerResetBtn" type="button">Reset</button>
+                        </div>
+                        <div class="timer-panel__status" id="cycleTimerStatus">Set focus, break, and cycle count.</div>
+                    </div>
                 </aside>
             </div>
 

@@ -16,6 +16,14 @@ let alarmSoundStopTimeoutId = null;
 let timerIntervalId = null;
 let timerRemainingMs = 0;
 let timerEndTime = null;
+let cycleTimerIntervalId = null;
+let cycleTimerRemainingMs = 0;
+let cycleTimerEndTime = null;
+let cycleTimerPhase = 'focus';
+let cycleTimerCompletedCycles = 0;
+let cycleTimerTotalCycles = 0;
+let cycleTimerFocusDurationMs = 0;
+let cycleTimerBreakDurationMs = 0;
 let alarmAudioContext = null;
 let alarmTargetMs = null;
 let alarmSetAtMs = null;
@@ -511,6 +519,180 @@ function pauseTimer() {
     setTimerStatus('statusTimerPaused');
 }
 
+function getCycleTimerPhaseLabel() {
+    if (cycleTimerPhase === 'break') return t('cycleTimerPhaseBreak');
+    if (cycleTimerPhase === 'complete') return t('cycleTimerPhaseComplete');
+    return t('cycleTimerPhaseFocus');
+}
+
+function getCycleTimerStatusParams() {
+    return {
+        phase: getCycleTimerPhaseLabel(),
+        current: Math.min(cycleTimerCompletedCycles + 1, Math.max(1, cycleTimerTotalCycles)),
+        total: Math.max(1, cycleTimerTotalCycles),
+        count: cycleTimerTotalCycles,
+    };
+}
+
+function updateCycleTimerDisplay() {
+    const display = document.getElementById('cycleTimerDisplay');
+    const phase = document.getElementById('cycleTimerPhase');
+    const totalSeconds = Math.max(0, Math.ceil(cycleTimerRemainingMs / 1000));
+
+    if (display) {
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        display.textContent = `${pad2(minutes)}:${pad2(seconds)}`;
+    }
+    if (phase) {
+        phase.textContent = cycleTimerPhase === 'complete'
+            ? getCycleTimerPhaseLabel()
+            : t('cycleTimerPhaseCycle', getCycleTimerStatusParams());
+    }
+}
+
+let lastCycleTimerStatusKey = null;
+
+function setCycleTimerStatus(key) {
+    lastCycleTimerStatusKey = key;
+    const status = document.getElementById('cycleTimerStatus');
+    if (status) status.textContent = key ? t(key, getCycleTimerStatusParams()) : '';
+}
+
+function stopCycleTimerInterval() {
+    if (cycleTimerIntervalId) {
+        clearInterval(cycleTimerIntervalId);
+        cycleTimerIntervalId = null;
+    }
+}
+
+function readCycleTimerSettings() {
+    const focusMinutesInput = document.getElementById('cycleTimerFocusMinutesInput');
+    const focusSecondsInput = document.getElementById('cycleTimerFocusSecondsInput');
+    const breakMinutesInput = document.getElementById('cycleTimerBreakMinutesInput');
+    const breakSecondsInput = document.getElementById('cycleTimerBreakSecondsInput');
+    const cyclesInput = document.getElementById('cycleTimerCyclesInput');
+    if (!focusMinutesInput || !focusSecondsInput || !breakMinutesInput || !breakSecondsInput || !cyclesInput) return null;
+
+    const focusMinutes = Number(focusMinutesInput.value);
+    const focusSeconds = Number(focusSecondsInput.value);
+    const breakMinutes = Number(breakMinutesInput.value);
+    const breakSeconds = Number(breakSecondsInput.value);
+    const cycles = Math.floor(Number(cyclesInput.value));
+    if (!Number.isFinite(focusMinutes) || !Number.isFinite(focusSeconds)
+        || !Number.isFinite(breakMinutes) || !Number.isFinite(breakSeconds)
+        || !Number.isFinite(cycles) || focusMinutes < 0 || focusSeconds < 0
+        || breakMinutes < 0 || breakSeconds < 0 || cycles < 1) {
+        return null;
+    }
+
+    const focusDurationSeconds = focusMinutes * 60 + Math.min(59, focusSeconds);
+    const breakDurationSeconds = breakMinutes * 60 + Math.min(59, breakSeconds);
+    if (!focusDurationSeconds || !breakDurationSeconds) return null;
+
+    return {
+        focusDurationMs: Math.floor(focusDurationSeconds * 1000),
+        breakDurationMs: Math.floor(breakDurationSeconds * 1000),
+        totalCycles: cycles,
+    };
+}
+
+function setCycleTimerSettings(settings) {
+    cycleTimerFocusDurationMs = settings.focusDurationMs;
+    cycleTimerBreakDurationMs = settings.breakDurationMs;
+    cycleTimerTotalCycles = settings.totalCycles;
+    cycleTimerCompletedCycles = 0;
+    cycleTimerPhase = 'focus';
+    cycleTimerRemainingMs = cycleTimerFocusDurationMs;
+    cycleTimerEndTime = null;
+    updateCycleTimerDisplay();
+}
+
+function tickCycleTimer() {
+    if (!cycleTimerEndTime) return;
+
+    cycleTimerRemainingMs = Math.max(0, cycleTimerEndTime - Date.now());
+    updateCycleTimerDisplay();
+    if (cycleTimerRemainingMs > 0) return;
+
+    playAlarmSound();
+    if (cycleTimerPhase === 'focus') {
+        cycleTimerPhase = 'break';
+        cycleTimerRemainingMs = cycleTimerBreakDurationMs;
+    } else {
+        cycleTimerCompletedCycles += 1;
+        if (cycleTimerCompletedCycles >= cycleTimerTotalCycles) {
+            stopCycleTimerInterval();
+            cycleTimerEndTime = null;
+            cycleTimerPhase = 'complete';
+            updateCycleTimerDisplay();
+            setCycleTimerStatus('statusCycleTimerComplete');
+            return;
+        }
+        cycleTimerPhase = 'focus';
+        cycleTimerRemainingMs = cycleTimerFocusDurationMs;
+    }
+
+    cycleTimerEndTime = Date.now() + cycleTimerRemainingMs;
+    updateCycleTimerDisplay();
+    setCycleTimerStatus('statusCycleTimerRunning');
+}
+
+function startCycleTimer() {
+    ensureAlarmAudioContext();
+    if (!cycleTimerRemainingMs) {
+        const settings = readCycleTimerSettings();
+        if (!settings) {
+            setCycleTimerStatus('statusCycleTimerSetFirst');
+            return;
+        }
+        setCycleTimerSettings(settings);
+    }
+
+    cycleTimerEndTime = Date.now() + cycleTimerRemainingMs;
+    stopCycleTimerInterval();
+    cycleTimerIntervalId = setInterval(tickCycleTimer, 250);
+    updateCycleTimerDisplay();
+    setCycleTimerStatus('statusCycleTimerRunning');
+}
+
+function pauseCycleTimer() {
+    if (!cycleTimerIntervalId) return;
+    cycleTimerRemainingMs = Math.max(0, cycleTimerEndTime - Date.now());
+    cycleTimerEndTime = null;
+    stopCycleTimerInterval();
+    updateCycleTimerDisplay();
+    setCycleTimerStatus('statusCycleTimerPaused');
+}
+
+function stopCycleTimer() {
+    stopCycleTimerInterval();
+    cycleTimerRemainingMs = 0;
+    cycleTimerEndTime = null;
+    cycleTimerPhase = 'focus';
+    cycleTimerCompletedCycles = 0;
+    updateCycleTimerDisplay();
+    setCycleTimerStatus('statusCycleTimerStopped');
+}
+
+function resetCycleTimerState() {
+    stopCycleTimerInterval();
+    const settings = readCycleTimerSettings();
+    if (!settings) {
+        cycleTimerRemainingMs = 0;
+        cycleTimerEndTime = null;
+        cycleTimerPhase = 'focus';
+        cycleTimerCompletedCycles = 0;
+        cycleTimerTotalCycles = 0;
+        updateCycleTimerDisplay();
+        setCycleTimerStatus('statusCycleTimerSetFirst');
+        return;
+    }
+
+    setCycleTimerSettings(settings);
+    setCycleTimerStatus('statusCycleTimerReady');
+}
+
 function syncAlarmInlineInput() {
     const input = document.getElementById('alarmTimeInlineInput');
     if (!input) return;
@@ -739,11 +921,23 @@ function applyStaticTranslations() {
     setText('timerStartBtn', 'timerStartBtn');
     setText('timerPauseBtn', 'timerPauseBtn');
     setText('timerResetBtn', 'timerResetBtn');
+    setText('cycleTimerTitle', 'cycleTimerTitle');
+    setText('cycleTimerFocusMinutesLabel', 'cycleTimerFocusMinutesLabel');
+    setText('cycleTimerFocusSecondsLabel', 'cycleTimerFocusSecondsLabel');
+    setText('cycleTimerBreakMinutesLabel', 'cycleTimerBreakMinutesLabel');
+    setText('cycleTimerBreakSecondsLabel', 'cycleTimerBreakSecondsLabel');
+    setText('cycleTimerCyclesLabel', 'cycleTimerCyclesLabel');
+    setText('cycleTimerStartBtn', 'timerStartBtn');
+    setText('cycleTimerPauseBtn', 'timerPauseBtn');
+    setText('cycleTimerStopBtn', 'cycleTimerStopBtn');
+    setText('cycleTimerResetBtn', 'timerResetBtn');
 
     // Text that depends on current app state rather than a fixed key.
     syncFormatToggleUI();
     syncFullscreenClockUI();
     setTimerStatus(lastTimerStatusKey, lastTimerStatusParams);
+    updateCycleTimerDisplay();
+    setCycleTimerStatus(lastCycleTimerStatusKey);
     showAlarmStatus(lastAlarmStatusKey, lastAlarmStatusParams);
     updateClock();
     refreshAlarmPanelTimes();
@@ -832,6 +1026,26 @@ if (timerResetBtn) {
     timerResetBtn.addEventListener('click', resetTimerState);
 }
 
+const cycleTimerStartBtn = document.getElementById('cycleTimerStartBtn');
+if (cycleTimerStartBtn) {
+    cycleTimerStartBtn.addEventListener('click', startCycleTimer);
+}
+
+const cycleTimerPauseBtn = document.getElementById('cycleTimerPauseBtn');
+if (cycleTimerPauseBtn) {
+    cycleTimerPauseBtn.addEventListener('click', pauseCycleTimer);
+}
+
+const cycleTimerStopBtn = document.getElementById('cycleTimerStopBtn');
+if (cycleTimerStopBtn) {
+    cycleTimerStopBtn.addEventListener('click', stopCycleTimer);
+}
+
+const cycleTimerResetBtn = document.getElementById('cycleTimerResetBtn');
+if (cycleTimerResetBtn) {
+    cycleTimerResetBtn.addEventListener('click', resetCycleTimerState);
+}
+
 document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
         document.body.classList.remove('clock-fullscreen-mode');
@@ -844,6 +1058,9 @@ document.addEventListener('visibilitychange', () => {
         checkAlarmDue();
         if (timerEndTime && Date.now() >= timerEndTime) {
             finishTimer();
+        }
+        if (cycleTimerEndTime && Date.now() >= cycleTimerEndTime) {
+            tickCycleTimer();
         }
     }
 });
@@ -897,6 +1114,7 @@ document.addEventListener('keydown', (event) => {
 
 syncTableScrollState();
 resetTimerState();
+resetCycleTimerState();
 syncAlarmInlineInput();
 
 window.addEventListener('resize', syncTableScrollState);
