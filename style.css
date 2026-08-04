@@ -64,6 +64,11 @@ body.clock-fullscreen-mode #clock
     overflow-x: auto;
 }
 
+.table-responsive.table-scroll
+{
+    overflow-y: auto;
+}
+
 .log-alarm-layout
 {
     width: 100%;

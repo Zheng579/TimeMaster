@@ -264,14 +264,29 @@ function syncTableScrollState() {
     const table = wrapper ? wrapper.querySelector('table') : null;
     if (!wrapper || !table) return;
 
-    // Make the wrapper scroll only when the table would exceed the viewport height.
+    // Make the wrapper scroll only when the table would exceed the available height.
     requestAnimationFrame(() => {
         const wrapperRect = wrapper.getBoundingClientRect();
         const tableRect = table.getBoundingClientRect();
 
         // Leave a little breathing room from the bottom edge.
         const paddingFromBottom = 24;
-        const availableHeight = Math.max(120, Math.floor(window.innerHeight - wrapperRect.top - paddingFromBottom));
+        const viewportAvailableHeight = Math.max(120, Math.floor(window.innerHeight - wrapperRect.top - paddingFromBottom));
+        const isTabletOrSmaller = window.matchMedia('(max-width: 1280px)').matches;
+        const headerRow = table.tHead ? table.tHead.rows[0] : null;
+        const logRows = table.tBodies[0] ? table.tBodies[0].rows : [];
+        const firstLogRow = logRows[0] || null;
+        const tenthLogRow = logRows[9] || null;
+        const headerHeight = headerRow ? headerRow.getBoundingClientRect().height : 36;
+        const logRowHeight = firstLogRow ? firstLogRow.getBoundingClientRect().height : headerHeight;
+        const estimatedBorderSpacing = 22;
+        const horizontalScrollbarAllowance = tableRect.width > wrapperRect.width ? 18 : 0;
+        const tenLogRowsHeight = tenthLogRow
+            ? Math.ceil(tenthLogRow.getBoundingClientRect().bottom - tableRect.top + horizontalScrollbarAllowance)
+            : Math.ceil(headerHeight + (logRowHeight * 10) + estimatedBorderSpacing + horizontalScrollbarAllowance);
+        const availableHeight = isTabletOrSmaller
+            ? Math.max(viewportAvailableHeight, tenLogRowsHeight)
+            : viewportAvailableHeight;
 
         const shouldScroll = tableRect.height > availableHeight;
         wrapper.classList.toggle('table-scroll', shouldScroll);
@@ -1096,6 +1111,7 @@ function initControlGroupAccordions() {
             toggle.setAttribute('aria-expanded', String(nextExpanded));
             group.classList.toggle('is-expanded', nextExpanded);
             if (arrow) arrow.textContent = nextExpanded ? '▲' : '▼';
+            syncTableScrollState();
         });
     });
 }
