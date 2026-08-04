@@ -41,6 +41,13 @@
 
             <div class="log-alarm-layout">
                 <aside class="alarm-control-panel" id="alarmControlPanel">
+                    <label class="language-select-label">
+                        <span id="languageSelectLabel">Language</span>
+                        <select class="language-select" id="languageSelect">
+                            <option value="en">English</option>
+                            <option value="zh">中文</option>
+                        </select>
+                    </label>
                     <button class="button time-entry-btn" id="logTimeStartBtn" type="button" title="Shortcut: Enter" aria-keyshortcuts="Tab">Log start time</button>
                     <button class="button time-entry-btn" id="logTimeBtn" type="button" title="Shortcut: Space" aria-keyshortcuts="Space">Log current time</button>
                     <button class="button time-entry-btn" id="clearLogBtn" type="button" title="Shortcut: Esc" aria-keyshortcuts="Escape">Clear log</button>
@@ -51,11 +58,11 @@
                     <table class="table" aria-label="Logged time entries">
                         <thead>
                             <tr>
-                                <th scope="col" style="width: 72px;">#</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Start Time</th>
-                                <th scope="col">Logged Time</th>
-                                <th scope="col">Duration</th>
+                                <th scope="col" style="width: 72px;" id="tableHeaderIndex">#</th>
+                                <th scope="col" id="tableHeaderDate">Date</th>
+                                <th scope="col" id="tableHeaderStartTime">Start Time</th>
+                                <th scope="col" id="tableHeaderLoggedTime">Logged Time</th>
+                                <th scope="col" id="tableHeaderDuration">Duration</th>
                             </tr>
                         </thead>
                         <tbody id="logTableBody"></tbody>
@@ -64,16 +71,16 @@
                 <aside class="alarm-panel" id="alarmPanel" aria-live="polite">
                     <button class="button time-entry-btn" id="alarmSoundStopBtn" type="button">Stop Sound</button>
                     <div class="alarm-panel__row">
-                        <span class="alarm-panel__label">Set Time</span>
+                        <span class="alarm-panel__label" id="alarmSetTimeLabel">Set Time</span>
                         <span class="alarm-panel__value" id="alarmPanelTime">--</span>
                     </div>
                     <div class="alarm-panel__row">
-                        <span class="alarm-panel__label">Next</span>
+                        <span class="alarm-panel__label" id="alarmNextLabel">Next</span>
                         <span class="alarm-panel__value" id="alarmPanelNext">--</span>
                     </div>
                     <div class="alarm-panel__inputs">
                         <label>
-                            Alarm time
+                            <span id="alarmTimeInputLabel">Alarm time</span>
                             <input type="time" id="alarmTimeInlineInput">
                         </label>
                     </div>
@@ -82,15 +89,15 @@
                         <button class="button alarm-btn" id="alarmClearBtn" type="button">Clear</button>
                     </div>
                     <div class="timer-panel" id="timerPanel">
-                        <h4>Timer</h4>
+                        <h4 id="timerTitle">Timer</h4>
                         <div class="timer-panel__display" id="timerDisplay">00:00</div>
                         <div class="timer-panel__inputs">
                             <label>
-                                Min
+                                <span id="timerMinLabel">Min</span>
                                 <input type="number" id="timerMinutesInput" min="0" max="999" value="0">
                             </label>
                             <label>
-                                Sec
+                                <span id="timerSecLabel">Sec</span>
                                 <input type="number" id="timerSecondsInput" min="0" max="59" value="0">
                             </label>
                         </div>
@@ -107,6 +114,7 @@
         </div>
     </div>
 
+    <script src="translations.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

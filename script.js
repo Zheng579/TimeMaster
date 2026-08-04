@@ -23,7 +23,7 @@ let alarmSetAtMs = null;
 function syncFormatToggleUI() {
     const toggleBtn = document.getElementById('toggleFormatBtn');
     if (!toggleBtn) return;
-    toggleBtn.textContent = use24Hour ? 'Switch to 12h' : 'Switch to 24h';
+    toggleBtn.textContent = use24Hour ? t('btnSwitchTo12h') : t('btnSwitchTo24h');
 }
 
 function setUse24Hour(enabled) {
@@ -38,7 +38,7 @@ function formatTime12(date) {
     const hours24 = date.getHours();
     const minutes = date.getMinutes();
     const seconds = date.getSeconds();
-    const ampm = hours24 >= 12 ? '下 午' : '上 午';
+    const ampm = hours24 >= 12 ? t('ampmPM') : t('ampmAM');
 
     let hours12 = hours24 % 12;
     if (hours12 === 0) hours12 = 12;
@@ -75,14 +75,14 @@ function formatDateYMD(date) {
     const year = date.getFullYear();
     const month = pad2(date.getMonth() + 1);
     const day = pad2(date.getDate());
-    return `${year} 年 ${month} 月 ${day} 日`;
+    return t('dateFormatYMD', { y: year, m: month, d: day });
 }
 
 function formatTimeForDisplay(date) {
-    const t = use24Hour ? formatTime24(date) : formatTime12(date);
+    const parts = use24Hour ? formatTime24(date) : formatTime12(date);
     return use24Hour
-        ? `${t.hours}:${t.minutes}:${t.seconds}`
-        : `${t.hours}:${t.minutes}:${t.seconds} ${t.ampm}`;
+        ? `${parts.hours}:${parts.minutes}:${parts.seconds}`
+        : `${parts.hours}:${parts.minutes}:${parts.seconds} ${parts.ampm}`;
 }
 
 function formatDuration(ms) {
@@ -111,13 +111,13 @@ function updateClock() {
     const secDot = document.querySelector('.sec_dot');
 
     const now = new Date();
-    const t = use24Hour ? formatTime24(now) : formatTime12(now);
+    const clockTime = use24Hour ? formatTime24(now) : formatTime12(now);
 
     if (dateEl) dateEl.textContent = formatDateYMD(now);
 
-    if (hoursEl) hoursEl.innerHTML = `${t.hours}<br><span>Hours</span>`;
-    if (minutesEl) minutesEl.innerHTML = `${t.minutes}<br><span>Minutes</span>`;
-    if (secondsEl) secondsEl.innerHTML = `${t.seconds}<br><span>Seconds</span>`;
+    if (hoursEl) hoursEl.innerHTML = `${clockTime.hours}<br><span>${t('clockHours')}</span>`;
+    if (minutesEl) minutesEl.innerHTML = `${clockTime.minutes}<br><span>${t('clockMinutes')}</span>`;
+    if (secondsEl) secondsEl.innerHTML = `${clockTime.seconds}<br><span>${t('clockSeconds')}</span>`;
 
     if (ampmEl) {
         const ampmWrap = ampmEl.closest('.ap');
@@ -126,7 +126,7 @@ function updateClock() {
             ampmEl.textContent = '';
         } else {
             if (ampmWrap) ampmWrap.classList.remove('d-none');
-            ampmEl.textContent = t.ampm;
+            ampmEl.textContent = clockTime.ampm;
         }
     }
 
@@ -282,6 +282,31 @@ function syncAlarmPanelPosition() {
     }
 }
 
+// set up fullscreen
+function syncFullscreenClockUI() {
+    const btn = document.getElementById('fullscreenClockBtn');
+    if (!btn) return;
+    btn.textContent = document.fullscreenElement ? t('btnExitFullScreen') : t('btnShowClock');
+}
+
+async function toggleClockFullscreen() {
+    try {
+        if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            return;
+        }
+
+        document.body.classList.add('clock-fullscreen-mode');
+        await document.documentElement.requestFullscreen();
+    } catch {
+        // Ignore if fullscreen is blocked (e.g., iframe / permission / browser policy)
+        document.body.classList.remove('clock-fullscreen-mode');
+    } finally {
+        syncFullscreenClockUI();
+    }
+}
+
+
 // Alarm
 function getStoredAlarmTime() {
     const raw = localStorage.getItem(ALARM_TIME_STORAGE_KEY);
@@ -356,12 +381,17 @@ function getNextAlarmDate(timeValue) {
     return next;
 }
 
-function showAlarmStatus(message) {
+let lastAlarmStatusKey = null;
+let lastAlarmStatusParams = null;
+
+function showAlarmStatus(key, params) {
+    lastAlarmStatusKey = key;
+    lastAlarmStatusParams = params || null;
     const panelStatus = document.getElementById('alarmPanelStatus');
-    if (panelStatus) panelStatus.textContent = message || '';
+    if (panelStatus) panelStatus.textContent = key ? t(key, params) : '';
 }
 
-function updateAlarmPanel({ setTimeText = null, nextTimeText = null, statusText = null, isAlert = false } = {}) {
+function updateAlarmPanel({ setTimeText = null, nextTimeText = null, statusKey = null, statusParams = null, isAlert = false } = {}) {
     const panel = document.getElementById('alarmPanel');
     const timeEl = document.getElementById('alarmPanelTime');
     const nextEl = document.getElementById('alarmPanelNext');
@@ -375,7 +405,7 @@ function updateAlarmPanel({ setTimeText = null, nextTimeText = null, statusText 
         nextEl.textContent = nextTimeText || '--';
     }
     if (statusEl) {
-        statusEl.textContent = statusText || 'No alarm set.';
+        statusEl.textContent = statusKey ? t(statusKey, statusParams) : t('statusNoAlarmSet');
     }
 
     panel.classList.toggle('is-alert', isAlert);
@@ -390,10 +420,15 @@ function updateTimerDisplay() {
     display.textContent = `${pad2(minutes)}:${pad2(seconds)}`;
 }
 
-function setTimerStatus(message) {
+let lastTimerStatusKey = null;
+let lastTimerStatusParams = null;
+
+function setTimerStatus(key, params) {
+    lastTimerStatusKey = key;
+    lastTimerStatusParams = params || null;
     const status = document.getElementById('timerStatus');
     if (!status) return;
-    status.textContent = message || '';
+    status.textContent = key ? t(key, params) : '';
 }
 
 function stopTimerInterval() {
@@ -408,7 +443,7 @@ function resetTimerState() {
     timerRemainingMs = 0;
     timerEndTime = null;
     updateTimerDisplay();
-    setTimerStatus('No timer set.');
+    setTimerStatus('statusNoTimerSet');
 }
 
 function readTimerInputMs() {
@@ -427,13 +462,13 @@ function startTimer() {
     ensureAlarmAudioContext();
     const durationMs = timerRemainingMs > 0 ? timerRemainingMs : readTimerInputMs();
     if (!durationMs) {
-        setTimerStatus('Set minutes/seconds first.');
+        setTimerStatus('statusSetMinSecFirst');
         return;
     }
 
     timerRemainingMs = durationMs;
     timerEndTime = Date.now() + timerRemainingMs;
-    setTimerStatus('Timer running.');
+    setTimerStatus('statusTimerRunning');
     updateTimerDisplay();
 
     stopTimerInterval();
@@ -453,7 +488,7 @@ function finishTimer() {
     timerEndTime = null;
     timerRemainingMs = 0;
     updateTimerDisplay();
-    setTimerStatus('Timer finished.');
+    setTimerStatus('statusTimerFinished');
     startAlarmSound(10000);
 }
 
@@ -465,7 +500,7 @@ function pauseTimer() {
     }
     timerEndTime = null;
     updateTimerDisplay();
-    setTimerStatus('Timer paused.');
+    setTimerStatus('statusTimerPaused');
 }
 
 function syncAlarmInlineInput() {
@@ -511,11 +546,11 @@ function clearAlarmState() {
     setStoredAlarmTime(null);
     setStoredAlarmTarget(null);
     setStoredAlarmSetAt(null);
-    showAlarmStatus('No alarm set.');
+    showAlarmStatus('statusNoAlarmSet');
     updateAlarmPanel({
         setTimeText: '--',
         nextTimeText: '--',
-        statusText: 'No alarm set.',
+        statusKey: 'statusNoAlarmSet',
         isAlert: false,
     });
 }
@@ -598,17 +633,18 @@ function startAlarmSound(durationMs = 60000) {
 function triggerAlarm(timeValue) {
     setStoredAlarmTarget(null);
     if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Alarm', {
-            body: `It is ${timeValue} now.`,
+        new Notification(t('notificationTitle'), {
+            body: t('notificationBody', { time: timeValue }),
             silent: true,
         });
     }
 
     startAlarmSound(60000);
-    showAlarmStatus(`Alarm triggered at ${timeValue}.`);
+    showAlarmStatus('statusAlarmTriggeredAt', { time: timeValue });
     updateAlarmPanel({
         nextTimeText: timeValue,
-        statusText: `Alarm triggered at ${timeValue}.`,
+        statusKey: 'statusAlarmTriggeredAt',
+        statusParams: { time: timeValue },
         isAlert: true,
     });
 
@@ -632,10 +668,11 @@ function scheduleAlarm(timeValue) {
         triggerAlarm(timeValue);
     }, delay);
 
-    showAlarmStatus(`Alarm set for ${timeValue}.`);
+    showAlarmStatus('statusAlarmSetFor', { time: timeValue });
     updateAlarmPanel({
         nextTimeText: timeValue,
-        statusText: `Alarm set for ${timeValue}.`,
+        statusKey: 'statusAlarmSetFor',
+        statusParams: { time: timeValue },
         isAlert: false,
     });
 }
@@ -645,7 +682,7 @@ function handleAlarmSet() {
     if (!input) return;
     const value = input.value;
     if (!value) {
-        showAlarmStatus('Please select a time.');
+        showAlarmStatus('statusPleaseSelectTime');
         return;
     }
 
@@ -654,7 +691,8 @@ function handleAlarmSet() {
     updateAlarmPanel({
         setTimeText: formatTimeForDisplay(new Date(alarmSetAtMs)),
         nextTimeText: value,
-        statusText: `Alarm set for ${value}.`,
+        statusKey: 'statusAlarmSetFor',
+        statusParams: { time: value },
         isAlert: false,
     });
     setStoredAlarmTime(value);
@@ -662,7 +700,59 @@ function handleAlarmSet() {
     requestNotificationPermission();
 }
 
+// Language / static text
+function applyStaticTranslations() {
+    document.title = t('pageTitle');
+
+    const setText = (id, key) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = t(key);
+    };
+
+    setText('languageSelectLabel', 'languageLabel');
+    setText('logTimeStartBtn', 'btnLogStartTime');
+    setText('logTimeBtn', 'btnLogCurrentTime');
+    setText('clearLogBtn', 'btnClearLog');
+    setText('tableHeaderIndex', 'tableHeaderIndex');
+    setText('tableHeaderDate', 'tableHeaderDate');
+    setText('tableHeaderStartTime', 'tableHeaderStartTime');
+    setText('tableHeaderLoggedTime', 'tableHeaderLoggedTime');
+    setText('tableHeaderDuration', 'tableHeaderDuration');
+    setText('alarmSoundStopBtn', 'alarmStopSound');
+    setText('alarmSetTimeLabel', 'alarmSetTimeLabel');
+    setText('alarmNextLabel', 'alarmNextLabel');
+    setText('alarmTimeInputLabel', 'alarmTimeInputLabel');
+    setText('alarmSetBtn', 'alarmSetBtn');
+    setText('alarmClearBtn', 'alarmClearBtn');
+    setText('timerTitle', 'timerTitle');
+    setText('timerMinLabel', 'timerMinLabel');
+    setText('timerSecLabel', 'timerSecLabel');
+    setText('timerStartBtn', 'timerStartBtn');
+    setText('timerPauseBtn', 'timerPauseBtn');
+    setText('timerResetBtn', 'timerResetBtn');
+
+    // Text that depends on current app state rather than a fixed key.
+    syncFormatToggleUI();
+    syncFullscreenClockUI();
+    setTimerStatus(lastTimerStatusKey, lastTimerStatusParams);
+    showAlarmStatus(lastAlarmStatusKey, lastAlarmStatusParams);
+    updateClock();
+    refreshAlarmPanelTimes();
+}
+
+function initLanguageSelect() {
+    const select = document.getElementById('languageSelect');
+    if (!select) return;
+    select.value = currentLanguage;
+    select.addEventListener('change', () => {
+        setCurrentLanguage(select.value);
+        applyStaticTranslations();
+    });
+}
+
 // Clock
+initLanguageSelect();
+applyStaticTranslations();
 syncFormatToggleUI();
 updateClock();
 setInterval(updateClock, 1000);
@@ -688,6 +778,11 @@ if (toggleFormatBtn) {
     toggleFormatBtn.addEventListener('click', () => setUse24Hour(!use24Hour));
 }
 
+const fullscreenClockBtn = document.getElementById('fullscreenClockBtn');
+if (fullscreenClockBtn) {
+    fullscreenClockBtn.addEventListener('click', toggleClockFullscreen);
+}
+
 const alarmSetBtn = document.getElementById('alarmSetBtn');
 if (alarmSetBtn) {
     alarmSetBtn.addEventListener('click', handleAlarmSet);
@@ -703,7 +798,8 @@ if (alarmSoundStopBtn) {
     alarmSoundStopBtn.addEventListener('click', () => {
         stopAlarmSound();
         clearAlarmAlert();
-        showAlarmStatus('Sound stopped.');
+        showAlarmStatus('statusSoundStopped');
+        setTimerStatus('statusSoundStopped');
     });
 }
 
@@ -722,6 +818,13 @@ if (timerResetBtn) {
     timerResetBtn.addEventListener('click', resetTimerState);
 }
 
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        document.body.classList.remove('clock-fullscreen-mode');
+    }
+    syncFullscreenClockUI();
+});
+
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
         checkAlarmDue();
@@ -731,6 +834,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+syncFullscreenClockUI();
 
 
 // Keyboard shortcut support
@@ -785,7 +889,7 @@ if (storedAlarm) {
     updateAlarmPanel({
         setTimeText: '--',
         nextTimeText: '--',
-        statusText: 'No alarm set.',
+        statusKey: 'statusNoAlarmSet',
         isAlert: false,
     });
 }
