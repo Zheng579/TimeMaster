@@ -941,7 +941,7 @@ function applyStaticTranslations() {
     setText('tableHeaderLoggedTime', 'tableHeaderLoggedTime');
     setText('tableHeaderDuration', 'tableHeaderDuration');
     setText('tableHeaderLogInterval', 'tableHeaderLogInterval');
-    setText('alarmSoundStopBtn', 'alarmStopSound');
+    setText('alarmSoundStopLabel', 'alarmStopSound');
     setText('clockPanelTitle', 'clockPanelTitle');
     setText('alarmSetTimeLabel', 'alarmSetTimeLabel');
     setText('alarmNextLabel', 'alarmNextLabel');

@@ -93,58 +93,10 @@
                     </table>
                 </div>
                 <aside class="timer-controls">
-                    <button class="button time-entry-btn timer-controls__stop-sound" id="alarmSoundStopBtn" type="button">Stop Sound</button>
-                    <section class="timer-accordion alarm-panel" id="alarmPanel" aria-live="polite">
-                        <button class="timer-accordion__header" id="alarmPanelToggleBtn" type="button" aria-expanded="false" aria-controls="alarmPanelContent" data-timer-accordion-toggle>
-                            <span id="clockPanelTitle">Clock</span>
-                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
-                        </button>
-                        <div class="timer-accordion__content" id="alarmPanelContent" hidden>
-                            <div class="alarm-panel__row">
-                                <span class="alarm-panel__label" id="alarmSetTimeLabel">Set Time</span>
-                                <span class="alarm-panel__value" id="alarmPanelTime">--</span>
-                            </div>
-                            <div class="alarm-panel__row">
-                                <span class="alarm-panel__label" id="alarmNextLabel">Next</span>
-                                <span class="alarm-panel__value" id="alarmPanelNext">--</span>
-                            </div>
-                            <div class="alarm-panel__inputs">
-                                <label>
-                                    <span id="alarmTimeInputLabel">Alarm time</span>
-                                    <input type="time" id="alarmTimeInlineInput">
-                                </label>
-                            </div>
-                            <div class="alarm-panel__actions">
-                                <button class="button alarm-btn" id="alarmSetBtn" type="button">Set</button>
-                                <button class="button alarm-btn" id="alarmResetBtn" type="button">Reset</button>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="timer-accordion" id="timerPanel">
-                        <button class="timer-accordion__header" id="timerPanelToggleBtn" type="button" aria-expanded="false" aria-controls="timerPanelContent" data-timer-accordion-toggle>
-                            <span id="timerTitle">Timer</span>
-                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
-                        </button>
-                        <div class="timer-accordion__content" id="timerPanelContent" hidden>
-                            <div class="timer-panel__display" id="timerDisplay">00:00</div>
-                            <div class="timer-panel__inputs">
-                                <label>
-                                    <span id="timerMinLabel">Min</span>
-                                    <input type="number" id="timerMinutesInput" min="0" max="999" value="0">
-                                </label>
-                                <label>
-                                    <span id="timerSecLabel">Sec</span>
-                                    <input type="number" id="timerSecondsInput" min="0" max="59" value="0">
-                                </label>
-                            </div>
-                            <div class="timer-panel__actions">
-                                <button class="button timer-btn standard-timer-btn" id="timerStartBtn" type="button">Start</button>
-                                <button class="button timer-btn standard-timer-btn" id="timerPauseBtn" type="button">Pause</button>
-                                <button class="button timer-btn standard-timer-btn" id="timerResetBtn" type="button">Reset</button>
-                            </div>
-                            <div class="timer-panel__status" id="timerStatus">No timer set.</div>
-                        </div>
-                    </section>
+                    <button class="button timer-controls__stop-sound" id="alarmSoundStopBtn" type="button">
+                        <span id="alarmSoundStopLabel">Stop Sound</span>
+                        <span class="timer-controls__stop-sound-icon" aria-hidden="true">🔇</span>
+                    </button>
                     <section class="timer-accordion" id="cycleTimerPanel">
                         <button class="timer-accordion__header" id="cycleTimerPanelToggleBtn" type="button" aria-expanded="false" aria-controls="cycleTimerPanelContent" data-timer-accordion-toggle>
                             <span id="cycleTimerTitle">Interval timer</span>
@@ -194,6 +146,57 @@
                                 <button class="button timer-btn" id="cycleTimerResetBtn" type="button">Reset</button>
                             </div>
                             <div class="timer-panel__status" id="cycleTimerStatus">Set both interval durations and a cycle count.</div>
+                        </div>
+                    </section>
+                    <section class="timer-accordion" id="timerPanel">
+                        <button class="timer-accordion__header" id="timerPanelToggleBtn" type="button" aria-expanded="false" aria-controls="timerPanelContent" data-timer-accordion-toggle>
+                            <span id="timerTitle">Timer</span>
+                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="timer-accordion__content" id="timerPanelContent" hidden>
+                            <div class="timer-panel__display" id="timerDisplay">00:00</div>
+                            <div class="timer-panel__inputs">
+                                <label>
+                                    <span id="timerMinLabel">Min</span>
+                                    <input type="number" id="timerMinutesInput" min="0" max="999" value="0">
+                                </label>
+                                <label>
+                                    <span id="timerSecLabel">Sec</span>
+                                    <input type="number" id="timerSecondsInput" min="0" max="59" value="0">
+                                </label>
+                            </div>
+                            <div class="timer-panel__actions">
+                                <button class="button timer-btn standard-timer-btn" id="timerStartBtn" type="button">Start</button>
+                                <button class="button timer-btn standard-timer-btn" id="timerPauseBtn" type="button">Pause</button>
+                                <button class="button timer-btn standard-timer-btn" id="timerResetBtn" type="button">Reset</button>
+                            </div>
+                            <div class="timer-panel__status" id="timerStatus">No timer set.</div>
+                        </div>
+                    </section>
+                    <section class="timer-accordion alarm-panel" id="alarmPanel" aria-live="polite">
+                        <button class="timer-accordion__header" id="alarmPanelToggleBtn" type="button" aria-expanded="false" aria-controls="alarmPanelContent" data-timer-accordion-toggle>
+                            <span id="clockPanelTitle">Clock</span>
+                            <span class="timer-accordion__arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="timer-accordion__content" id="alarmPanelContent" hidden>
+                            <div class="alarm-panel__row">
+                                <span class="alarm-panel__label" id="alarmSetTimeLabel">Set Time</span>
+                                <span class="alarm-panel__value" id="alarmPanelTime">--</span>
+                            </div>
+                            <div class="alarm-panel__row">
+                                <span class="alarm-panel__label" id="alarmNextLabel">Next</span>
+                                <span class="alarm-panel__value" id="alarmPanelNext">--</span>
+                            </div>
+                            <div class="alarm-panel__inputs">
+                                <label>
+                                    <span id="alarmTimeInputLabel">Alarm time</span>
+                                    <input type="time" id="alarmTimeInlineInput">
+                                </label>
+                            </div>
+                            <div class="alarm-panel__actions">
+                                <button class="button alarm-btn" id="alarmSetBtn" type="button">Set</button>
+                                <button class="button alarm-btn" id="alarmResetBtn" type="button">Reset</button>
+                            </div>
                         </div>
                     </section>
                 </aside>

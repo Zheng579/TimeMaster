@@ -340,15 +340,45 @@ body.clock-fullscreen-mode #clock
 .timer-controls__stop-sound
 {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 0 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+    background: transparent;
+    color: #fff;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.timer-controls__stop-sound-icon
+{
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.timer-controls__stop-sound:hover
+{
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
 }
 
 .timer-accordion
 {
-    background: #1f242a;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 16px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
     color: #fff;
     display: grid;
+    gap: 8px;
 }
 
 .timer-accordion__header
@@ -357,16 +387,19 @@ body.clock-fullscreen-mode #clock
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px;
-    border: 0;
-    border-radius: 16px;
+    gap: 8px;
+    padding: 0 0 4px;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 0;
+    border-radius: 0;
     background: transparent;
     color: inherit;
-    font: inherit;
+    font-family: inherit;
     text-align: left;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 
@@ -377,15 +410,15 @@ body.clock-fullscreen-mode #clock
     flex: 0 0 24px;
     display: inline-grid;
     place-items: center;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     line-height: 1;
 }
 
 .timer-accordion__content
 {
     display: grid;
-    gap: 12px;
-    padding: 0 16px 16px;
+    gap: 8px;
+    padding: 0;
 }
 
 .timer-accordion__content[hidden]
